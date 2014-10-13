@@ -1,0 +1,94 @@
+// Keith Pottratz
+// October 8, 2014
+
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <string>
+using namespace std;
+const int maxc = 100;
+void initem(int id[maxc], string first[], string last[], double oldbal[], double payments[], double purch[], int & numc)
+{
+	int i;
+	for (i = 0; i < maxc; i++)
+	{
+		first[i] = "Tuvok";
+		last[i] = "Voyager";
+		id[i] = 00;
+		oldbal[i] = 0;
+		payments[i] = 0;
+		purch[i] = 0;
+
+	}
+	numc = 0;
+}
+void readem(int id[maxc], string first[], string last[], double oldbal[], double payments[], double purch[], int & numc)
+{
+	ifstream inf;
+	int i;
+	inf.open("program4.dat");
+	i = 0;
+	while (!inf.eof())
+	{
+		inf >> id[i] >> first[i] >> last[i] >> oldbal[i] >> payments[i] >> purch[i];
+	}
+	numc = i;
+}
+void calcem(double oldbal[],double payments[],double purch[],double newbal[],int & numc)
+{
+	int i;
+	for (i = 0; i < maxc; i++)
+	{
+		newbal[i] = oldbal[i] + purch[i] - payments[i];
+
+	}
+	i++;
+
+}
+void printem(int id[maxc], string first[], string last[], double oldbal[], double payments[], double purch[],double newbal[],int & numc,
+			ofstream &outf)
+{
+	int i;
+	outf.open("program4.ot");
+	for (i = 0; i < numc; i++) outf << setw(15) << id[i] << left
+		<< setw(5) << first[i] << setw(5) << last[i] << right
+		<< setw(5) << oldbal[i] << setw(5) << payments[i]
+		<< setw(5) << purch[i] <<newbal[i] << endl;
+	for (i = 0; i <= 70; i++)outf << "-";
+		outf<< endl;
+}
+void sortem()
+{
+	cout << "sortem reached" << endl;
+}
+void writeem(int id[maxc], string first[], string last[], double oldbal[], double payments[], double purch[], double newbal[],int & numc,
+	ofstream &outf)
+{
+	int i;
+	for (i = 0; i < numc; i++)outf << setw(5) << first << setw(5) << last << right
+		<< setw(5) << oldbal << setw(5) << payments
+		<< setw(5) << purch << newbal << endl;
+	for (i = 0; i <= 70; i++)outf << "-";
+	outf << endl;
+}
+
+void main()
+{
+	string first[maxc], last[maxc];
+	int id[maxc],numc;
+	double payments[maxc], oldbal[maxc], purch[maxc], newbal[maxc];
+	ofstream outf;
+	outf.open("program4.ot");
+	outf.setf(ios::fixed);
+	outf.precision(2);
+	
+	initem(id, first, last, oldbal, payments, purch,numc);
+	readem(id, first,last,oldbal,payments,purch,numc);
+	calcem(oldbal,payments,purch,newbal,numc);
+	sortem();
+	writeem(id, first, last, oldbal, payments, purch, newbal,numc,outf);
+	printem(id,first,last,oldbal,payments,purch,newbal,numc,outf);
+	
+
+	system("pause");
+}
