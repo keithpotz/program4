@@ -88,6 +88,9 @@ void main()
 	sortem();
 	writeem(id, first, last, oldbal, payments, purch, newbal,numc,outf);
 	printem(id,first,last,oldbal,payments,purch,newbal,numc,outf);
+	{
+	for (i=0; i <numc;i++);
+	}
 	
 
 	system("pause");
