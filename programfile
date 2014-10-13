@@ -1,5 +1,7 @@
 // Keith Pottratz
 // October 8, 2014
+// This program is designed to show Old Balance of customers, New Balance, and Purchases. The total of all 
+// of these plus a new balance at the end. 
 
 #include <iostream>
 #include <fstream>
@@ -7,7 +9,7 @@
 #include <string>
 using namespace std;
 const int maxc = 100;
-void initem(int id[maxc], string first[], string last[], double oldbal[], double payments[], double purch[], int & numc)
+void initem(int id[maxc], string first[], string last[], double oldbal[], double payments[], double purch[],double newbal[], int &numc)
 {
 	int i;
 	for (i = 0; i < maxc; i++)
@@ -18,26 +20,28 @@ void initem(int id[maxc], string first[], string last[], double oldbal[], double
 		oldbal[i] = 0;
 		payments[i] = 0;
 		purch[i] = 0;
+		newbal[i] = 0;
 
 	}
 	numc = 0;
 }
-void readem(int id[maxc], string first[], string last[], double oldbal[], double payments[], double purch[], int & numc)
+void readem(int id[], string first[], string last[], double oldbal[], double payments[], double purch[], int &numc)
 {
-	ifstream inf;
 	int i;
+	ifstream inf;
 	inf.open("program4.dat");
 	i = 0;
 	while (!inf.eof())
 	{
 		inf >> id[i] >> first[i] >> last[i] >> oldbal[i] >> payments[i] >> purch[i];
+		i++;
 	}
 	numc = i;
 }
 void calcem(double oldbal[],double payments[],double purch[],double newbal[],int & numc)
 {
 	int i;
-	for (i = 0; i < maxc; i++)
+	for (i = 0; i < numc; i++)
 	{
 		newbal[i] = oldbal[i] + purch[i] - payments[i];
 
@@ -45,53 +49,99 @@ void calcem(double oldbal[],double payments[],double purch[],double newbal[],int
 	i++;
 
 }
-void printem(int id[maxc], string first[], string last[], double oldbal[], double payments[], double purch[],double newbal[],int & numc,
-			ofstream &outf)
+double gettotal(double num[] ,int numc)
 {
 	int i;
-	outf.open("program4.ot");
-	for (i = 0; i < numc; i++) outf << setw(15) << id[i] << left
-		<< setw(5) << first[i] << setw(5) << last[i] << right
-		<< setw(5) << oldbal[i] << setw(5) << payments[i]
-		<< setw(5) << purch[i] <<newbal[i] << endl;
-	for (i = 0; i <= 70; i++)outf << "-";
+	i = 0;
+	double total;
+	total = 0;
+	for (i = 0; i < numc; i++) total += num[i];
+
+	return total;
+}
+void printem(int id[maxc], string first[], string last[], double oldbal[], double payments[], double purch[], double newbal[], int numc,
+	ofstream &outf, double tpay, double tnewbal, double told, double tpurch)
+{
+	int i;
+	outf << setw(42) << "Customer Invoice" << endl << setw(17) << "First" << setw(8) << "Last" << setw(14)
+		<<"Old"<<setw(32)<<"New"<< endl;
+	outf <<setw(3)<<"ID" << setw(14) << "Name" << setw(8) << "Name" << setw(16) << "Balance" << setw(12) << "Payments"
+		<< setw(12) << "Purchases" << setw(9) << "Balance" << endl;
+	for (i = 0; i <= 75; i++)outf << "-";
+		outf << endl;
+	for (i = 0; i < numc; i++) outf  <<left <<setw(12)<< id[i]<< setw(10) 
+		<< first[i] << setw(10) << last[i] << right
+		<< setw(10) << oldbal[i] << setw(10) << payments[i]
+		<< setw(11) << purch[i] <<setw(10)<<newbal[i] << endl;
+	for (i = 0; i <= 75; i++)outf << "-";
 		outf<< endl;
+		outf << setw(43) << told << setw(10) << tpay << setw(11) << tpurch
+			<< setw(10) << tnewbal << endl;
 }
-void sortem()
+void swapem(int &a, int &b)
 {
-	cout << "sortem reached" << endl;
+	int temp;
+	temp = a;
+	a = b;
+	b = temp;
 }
-void writeem(int id[maxc], string first[], string last[], double oldbal[], double payments[], double purch[], double newbal[],int & numc,
-	ofstream &outf)
+void swapem(double &a, double &b)
 {
+	double temp;
+	temp = a;
+	a = b;
+	b = temp;
+}
+void swapem(string &a, string &b)
+{
+	string temp;
+	temp = a;
+	a = b;
+	b = temp;
+}
+void sortem(int id[maxc], string first[], string last[], double oldbal[], double payments[], double purch[], double newbal[], int numc)
+{
+	int j;
 	int i;
-	for (i = 0; i < numc; i++)outf << setw(5) << first << setw(5) << last << right
-		<< setw(5) << oldbal << setw(5) << payments
-		<< setw(5) << purch << newbal << endl;
-	for (i = 0; i <= 70; i++)outf << "-";
-	outf << endl;
+	for (j = 0; j <  numc - 1; j++)
+		for (i = 0; i < numc - 1; i++)
+			if (last[i] > last[i + 1])
+	{
+			swapem(last[i], last[i + 1]);
+		    swapem(first[i], first[i + 1]);
+			swapem(id[i], id[i + 1]);
+			swapem(oldbal[i], oldbal[i + 1]);
+			swapem(payments[i], payments[i + 1]);
+			swapem(purch[i], purch[i + 1]);
+			swapem(newbal[i], newbal[i + 1]);
+	}
+
+			
 }
+
 
 void main()
 {
 	string first[maxc], last[maxc];
 	int id[maxc],numc;
-	double payments[maxc], oldbal[maxc], purch[maxc], newbal[maxc];
+	double payments[maxc], oldbal[maxc], purch[maxc], newbal[maxc], tnewbal, tpurch, told, tpay;
 	ofstream outf;
 	outf.open("program4.ot");
 	outf.setf(ios::fixed);
 	outf.precision(2);
-	
-	initem(id, first, last, oldbal, payments, purch,numc);
+	tnewbal = 0;
+	tpurch = 0;
+	told = 0;
+	tpay = 0;
+	initem(id, first, last, oldbal, payments, purch,newbal,numc);
 	readem(id, first,last,oldbal,payments,purch,numc);
 	calcem(oldbal,payments,purch,newbal,numc);
-	sortem();
-	writeem(id, first, last, oldbal, payments, purch, newbal,numc,outf);
-	printem(id,first,last,oldbal,payments,purch,newbal,numc,outf);
-	{
-	for (i=0; i <numc;i++);
-	}
-	
+	tnewbal = gettotal(newbal, numc);
+	tpurch = gettotal(purch, numc);
+	told = gettotal(oldbal, numc);
+	tpay = gettotal(payments, numc);
+	sortem(id, first, last, oldbal, payments, purch, newbal, numc);
+	printem(id, first, last, oldbal, payments, purch, newbal, numc, outf, tpay, tnewbal, told, tpurch);
 
 	system("pause");
 }
